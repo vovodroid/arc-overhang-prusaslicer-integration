@@ -1057,8 +1057,11 @@ def readSettingsFromGCode2dict(gcodeLines:list)->dict:
                     gCodeSettingDict[setting[0].strip(" ")]=literal_eval(setting[1]) # automaticly convert into int,float,...
                 except:
                     gCodeSettingDict[setting[0].strip(" ")]=setting[1] # leave the complex settings as strings. They shall be handled individually if necessary 
-            else:
-                print("unmatching setting:",setting)
+            elif len(setting)>2:
+                gCodeSettingDict[setting[0].strip(" ")]=setting[1:]
+                print("INFO:PrusaSlicer Setting not in the expected format, but added into script dictionary:",setting)
+            else:    
+                print("Could not read setting from PrusaSlicer:",setting)
     if "%" in str(gCodeSettingDict.get("perimeter_extrusion_width")) : #overwrite Percentage width as suggested by 5axes via github                
         gCodeSettingDict["perimeter_extrusion_width"]=gCodeSettingDict.get("nozzle_diameter")*(float(gCodeSettingDict.get("perimeter_extrusion_width").strip("%"))/100)                 
     return gCodeSettingDict
