@@ -108,7 +108,7 @@ def main(gCodeFileStream,path2GCode,skipInput)->None:
     gCodeSettingDict=readSettingsFromGCode2dict(gCodeLines)
     parameters=makeFullSettingDict(gCodeSettingDict)
     if not checkforNecesarrySettings(gCodeSettingDict):
-        warnings.warn("Incompatible Settings used!")
+        warnings.warn("Incompatible PursaSlicer-Settings used!")
         input("Can not run script, gcode unmodified. Press enter to close.")
         raise ValueError("Incompatible Settings used!") 
     layerobjs=[]
