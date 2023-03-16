@@ -1065,22 +1065,22 @@ def readSettingsFromGCode2dict(gcodeLines:list)->dict:
 
 def checkforNecesarrySettings(gCodeSettingDict:dict)->bool:
     if not gCodeSettingDict.get("use_relative_e_distances"):
-        warnings.warn("Script only works with relative e-distances. Change acordingly.")
+        warnings.warn("Script only works with relative e-distances enabled in PrusaSlicer. Change acordingly.")
         return False
     if gCodeSettingDict.get("extrusion_width")<0.001 or gCodeSettingDict.get("perimeter_extrusion_width")<0.001 or gCodeSettingDict.get("solid_infill_extrusion_width")<0.001:
-        warnings.warn("Script only works with extrusionwidth and perimeter_extrusion_width and solid_infill_extrusion_width>0. Change acordingly.")
+        warnings.warn("Script only works with extrusion_width and perimeter_extrusion_width and solid_infill_extrusion_width>0. Change in PrusaSlicer acordingly.")
         return False    
     if not gCodeSettingDict.get("overhangs"):
-        warnings.warn("Overhang detection disabled. Activate for script success!")
+        warnings.warn("Overhang detection disabled in PrusaSlicer. Activate in PrusaSlicer for script success!")
         return False
     if gCodeSettingDict.get("bridge_speed")>5:
-        warnings.warn(f"Your Bridging Speed is set to {gCodeSettingDict.get('bridge_speed'):.0f} mm/s. This can cause problems with warping.<=5mm/s is recommended")        
+        warnings.warn(f"Your Bridging Speed is set to {gCodeSettingDict.get('bridge_speed'):.0f} mm/s in PrusaSlicer. This can cause problems with warping.<=5mm/s is recommended")        
     if gCodeSettingDict.get("infill_first"):
-        warnings.warn("Infill is printed before perimeter. This can cause problems with the script.")
+        warnings.warn("Infill set in PrusaSlicer to be printed before perimeter. This can cause problems with the script.")
     if gCodeSettingDict.get("external_perimeters_first"):
-        warnings.warn("External perimeter is printed before inner perimeters. Change for better overhang performance. ")
+        warnings.warn("PrusaSlicer-Setting: External perimeter is printed before inner perimeters. Change for better overhang performance. ")
     if not gCodeSettingDict.get("avoid_crossing_perimeters"):
-        warnings.warn("Travel Moves may cross the outline and therefore cause artefacts in arc generation.")    
+        warnings.warn("PrusaSlicer-Setting: Travel Moves may cross the outline and therefore cause artefacts in arc generation.")    
     return True
 def calcEStepsPerMM(settingsdict:dict,layerheight:float=None)->float:
     if layerheight:# case: printing on surface.
