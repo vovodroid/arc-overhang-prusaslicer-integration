@@ -728,7 +728,7 @@ class Layer():
     def createHilbertCurveInPoly(self,poly:Polygon):
         print("making hilbert surface")
         dimensions=2
-        w=self.parameters.get("solid_infill_extrusion_width")*2
+        w=self.parameters.get("solid_infill_extrusion_width")
         a=self.parameters.get("HilbertFillingPercentage")/100
         mmBetweenTravels=(self.parameters.get("aboveArcsInfillPrintSpeed")/60)*self.parameters.get("HilbertTravelEveryNSeconds")
         minX, minY, maxX, maxY=poly.bounds
@@ -736,13 +736,16 @@ class Layer():
         ly=maxY-minY
         l=max(lx,ly)
         #Iterationcount Math explained: 
-        # startpoint: l/w=number of needed segments. segments=2**p-1, where p =iterationcount>=1. Solved for iterationcount
-        iterationCount=int(np.ceil(np.log((a*l+w)/w)/np.log(2))) # + applied ceiling function
-        scale=l/(2**iterationCount-1)/a
+        # startpoint: l/w=number of needed segments. segments=(2**iterationcount)-1. Solved for iterationcount.
+        iterationCount=int(np.ceil(np.log((a*l+w)/w)/np.log(2))) # + applied ceiling function to ensucre full coverage.
+        scale=w/a#l/(2**iterationCount-1)/a
         maxidx=int(2**(dimensions* iterationCount) - 1)
         locs = decode(np.arange(maxidx), 2, iterationCount)# hilbertidx->(x,y) first argument: idx, second: dimensions, third: bits per dim
-        x=locs[:,0]*scale+minX
-        y=locs[:,1]*scale+minY
+        #move the curve 1 point in the smaller direction every second layer=>web the curves in z together by overlapping.
+        movX=self.layernumber%2*(lx<ly)*w/a
+        movY=self.layernumber%2*(lx>ly)*w/a
+        x=locs[:,0]*scale+minX+movX
+        y=locs[:,1]*scale+minY+movY
         hilbertPointsRaw=[[xi,yi] for xi,yi in zip(x.tolist(),y.tolist())]
         noEl=int(np.ceil(mmBetweenTravels/scale))
         buff=[]
