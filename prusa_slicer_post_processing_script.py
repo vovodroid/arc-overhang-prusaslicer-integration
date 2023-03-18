@@ -742,8 +742,8 @@ class Layer():
         maxidx=int(2**(dimensions* iterationCount) - 1)
         locs = decode(np.arange(maxidx), 2, iterationCount)# hilbertidx->(x,y) first argument: idx, second: dimensions, third: bits per dim
         #move the curve 1 point in the smaller direction every second layer=>web the curves in z together by overlapping.
-        movX=self.layernumber%2*(lx<ly)*w/a
-        movY=self.layernumber%2*(lx>ly)*w/a
+        movX=self.layernumber%2*w/a
+        movY=self.layernumber%2*w/a
         x=locs[:,0]*scale+minX+movX
         y=locs[:,1]*scale+minY+movY
         hilbertPointsRaw=[[xi,yi] for xi,yi in zip(x.tolist(),y.tolist())]
@@ -1102,8 +1102,8 @@ def calcEStepsPerMM(settingsdict:dict,layerheight:float=None)->float:
         return eInMm
 
 def p2GCode(p:Point,E=0,**kwargs)->str:
-    line=f"G1 X{p.x:.4} Y{p.y:.4} "
-    line+="E0" if E==0 else f"E{E:.5f}"
+    line=f"G1 X{p.x:.6} Y{p.y:.6} "
+    line+="E0" if E==0 else f"E{E:.7f}"
     if kwargs.get('F'):
         line+=f" F{kwargs.get('F'):0d}"
     line+='\n'       
