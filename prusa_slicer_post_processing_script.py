@@ -744,8 +744,8 @@ class Layer():
         #move the curve 1 point in the smaller direction every second layer=>web the curves in z together by overlapping.
         movX=self.layernumber%2*w/a
         movY=self.layernumber%2*w/a
-        x=locs[:,0]*scale+minX+movX
-        y=locs[:,1]*scale+minY+movY
+        x=locs[:,0]*scale+minX-movX
+        y=locs[:,1]*scale+minY-movY
         hilbertPointsRaw=[[xi,yi] for xi,yi in zip(x.tolist(),y.tolist())]
         noEl=int(np.ceil(mmBetweenTravels/scale))
         buff=[]
