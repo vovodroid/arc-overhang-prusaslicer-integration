@@ -1050,8 +1050,11 @@ def readSettingsFromGCode2dict(gcodeLines:list)->dict:
     gCodeSettingDict={}
     isSetting=False
     for line in gcodeLines:
-        if "; prusaslicer_config = begin" in line:
+        if "slicer_config = begin" in line and line[0]==";": #original: ; prusaslicer_config = begin, reduced for compatability with superslicer
             isSetting=True
+            continue
+        if "slicer_config = end" in line and line[0]==";":
+            isSetting=False
             continue
         if isSetting :
             setting=line.strip(";").strip("\n").split("= ")
