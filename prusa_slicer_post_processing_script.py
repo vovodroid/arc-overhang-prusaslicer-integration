@@ -56,6 +56,7 @@ def makeFullSettingDict(gCodeSettingDict:dict) -> dict:
         #"ArcPrintTemp":gCodeSettingDict.get("temperature"), # unit: Celsius
         "ArcTravelFeedRate":30*60, # slower travel speed, Unit:mm/min
         "ExtendIntoPerimeter":1.5*gCodeSettingDict.get("perimeter_extrusion_width"), #min=0.5extrusionwidth!, extends the Area for arc generation, put higher to go through small passages. Unit:mm
+        "Fallback_nozzle_diameter":0.4, #if nozzle dia is not readable from gcode this will be used. Possible Causes: multiple extruders/multimaterial used.
         "MaxDistanceFromPerimeter":2*gCodeSettingDict.get("perimeter_extrusion_width"),#Control how much bumpiness you allow between arcs and perimeter. lower will follow perimeter better, but create a lot of very small arcs. Should be more that 1 Arcwidth! Unit:mm
         "MinArea":5*10,#Unit:mm2
         "MinBridgeLength":5,#Unit:mm
@@ -99,6 +100,8 @@ def makeFullSettingDict(gCodeSettingDict:dict) -> dict:
         "PrintDebugVerification":False
         }
     gCodeSettingDict.update(AddManualSettingsDict)
+    if type(gCodeSettingDict.get("nozzle_diameter"))==type(" "):
+        gCodeSettingDict["nozzle_diameter"]=gCodeSettingDict.get("Fallback_nozzle_diameter")
     return gCodeSettingDict
 
 ################################# MAIN FUNCTION #################################
