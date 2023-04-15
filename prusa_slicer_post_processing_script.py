@@ -100,7 +100,7 @@ def makeFullSettingDict(gCodeSettingDict:dict) -> dict:
         "PrintDebugVerification":False
         }
     gCodeSettingDict.update(AddManualSettingsDict)
-    if type(gCodeSettingDict.get("nozzle_diameter"))==type(" "):
+    if not ( isinstance(gCodeSettingDict.get("nozzle_diameter"),int) or isinstance(gCodeSettingDict.get("nozzle_diameter"),float) ) :
         gCodeSettingDict["nozzle_diameter"]=gCodeSettingDict.get("Fallback_nozzle_diameter")
     return gCodeSettingDict
 
