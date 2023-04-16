@@ -2,27 +2,22 @@
 This script generates Overhangs by stringing together Arcs, allowing successful fdm-3d-printing of large 90 deg overhangs!
 The genius Idea is emerged from Steven McCulloch, who coded a demonstration and the basic mechanics: https://github.com/stmcculloch/arc-overhang
 This python script builds up on that and offers a convinient way to integrate the ArcOverhangs into an existing gcode-file.
-
 HOW TO USE: 
 Option A) open your system console and type 'python ' followed by the path to this script and the path of the gcode file. Will overwrite the file.
 Option B) open PrusaSlicer, go to print-settings-tab->output-options. Locate the window for post-processing-script. 
     In that window enter: full path to your python exe,emtyspace, full path to this script.
     If the python path contains any empty spaces, mask them as described here: https://manual.slic3r.org/advanced/post-processing
 =>PrusaSlicer will execute the script after the export of the Gcode, therefore the view in the window wont change. Open the finished gcode file to see the results.
-
 If you want to change generation settings: Scroll to 'Parameter' section. Settings from PrusaSlicer will be extracted automaticly from the gcode.
-
 Requirements:
 Python 3.5+ and the librarys: shapely 1.8+, numpy 1.2+, numpy-hilbert-curve matplotlib for debugging
 Slicing in PrusaSlicer is mandatory.
 Tested only in PrusaSlicer 2.5&Python 3.10, other versions might need adapted keywords.
-
 Notes:
 This code is a little messy. Usually I would devide it into multiple files, but that would compromise the ease of use.
 Therefore I divided the code into sections, marked with ###
 Feel free to give it some refactoring and add more functionalities!
 Used Coding-Flavour: variable Names: smallStartEveryWordCapitalized, 'to' replaced by '2', same for "for"->"4". Parameters: BigStartEveryWordCapitalized
-
 Known issues:
 -pointsPerCircle>80 might give weird results
 -MaxDistanceFromPerimeter >=2*perimeterwidth might weird result.
@@ -56,7 +51,6 @@ def makeFullSettingDict(gCodeSettingDict:dict) -> dict:
         #"ArcPrintTemp":gCodeSettingDict.get("temperature"), # unit: Celsius
         "ArcTravelFeedRate":30*60, # slower travel speed, Unit:mm/min
         "ExtendIntoPerimeter":1.5*gCodeSettingDict.get("perimeter_extrusion_width"), #min=0.5extrusionwidth!, extends the Area for arc generation, put higher to go through small passages. Unit:mm
-        "Fallback_nozzle_diameter":0.4, #if nozzle dia is not readable from gcode this will be used. Possible Causes: multiple extruders/multimaterial used.
         "MaxDistanceFromPerimeter":2*gCodeSettingDict.get("perimeter_extrusion_width"),#Control how much bumpiness you allow between arcs and perimeter. lower will follow perimeter better, but create a lot of very small arcs. Should be more that 1 Arcwidth! Unit:mm
         "MinArea":5*10,#Unit:mm2
         "MinBridgeLength":5,#Unit:mm
@@ -100,8 +94,6 @@ def makeFullSettingDict(gCodeSettingDict:dict) -> dict:
         "PrintDebugVerification":False
         }
     gCodeSettingDict.update(AddManualSettingsDict)
-    if not ( isinstance(gCodeSettingDict.get("nozzle_diameter"),int) or isinstance(gCodeSettingDict.get("nozzle_diameter"),float) ) :
-        gCodeSettingDict["nozzle_diameter"]=gCodeSettingDict.get("Fallback_nozzle_diameter")
     return gCodeSettingDict
 
 ################################# MAIN FUNCTION #################################
@@ -110,7 +102,7 @@ def makeFullSettingDict(gCodeSettingDict:dict) -> dict:
 def main(gCodeFileStream,path2GCode,skipInput)->None:
     '''Here all the work is done, therefore it is much to long.'''
     gCodeLines=gCodeFileStream.readlines()
-    gCodeSettingDict=readSettingsFromGCode2dict(gCodeLines)
+    gCodeSettingDict=readSettingsFromGCode2dict(gCodeLines,{"Fallback_nozzle_diameter":0.4,"Fallback_filament_diameter":1.75}) #ADD FALLBACK VALUES HERE
     parameters=makeFullSettingDict(gCodeSettingDict)
     if not checkforNecesarrySettings(gCodeSettingDict):
         warnings.warn("Incompatible PursaSlicer-Settings used!")
@@ -1061,8 +1053,8 @@ def getArcBoundarys(concentricArcs:list)->list:
             boundarys.append(arcLine)
     return boundarys                
 
-def readSettingsFromGCode2dict(gcodeLines:list)->dict:
-    gCodeSettingDict={}
+def readSettingsFromGCode2dict(gcodeLines:list,fallbackValuesDict:dict)->dict:
+    gCodeSettingDict=fallbackValuesDict
     isSetting=False
     for line in gcodeLines:
         if "; prusaslicer_config = begin" in line:
@@ -1077,11 +1069,22 @@ def readSettingsFromGCode2dict(gcodeLines:list)->dict:
                     gCodeSettingDict[setting[0].strip(" ")]=setting[1] # leave the complex settings as strings. They shall be handled individually if necessary 
             elif len(setting)>2:
                 gCodeSettingDict[setting[0].strip(" ")]=setting[1:]
-                print("INFO:PrusaSlicer Setting not in the expected format, but added into script dictionary:",setting)
+                warnings.warn(f"PrusaSlicer Setting {setting[0]} not in the expected key/value format, but added into the settings-dictionarry")
             else:    
                 print("Could not read setting from PrusaSlicer:",setting)
     if "%" in str(gCodeSettingDict.get("perimeter_extrusion_width")) : #overwrite Percentage width as suggested by 5axes via github                
-        gCodeSettingDict["perimeter_extrusion_width"]=gCodeSettingDict.get("nozzle_diameter")*(float(gCodeSettingDict.get("perimeter_extrusion_width").strip("%"))/100)                 
+        gCodeSettingDict["perimeter_extrusion_width"]=gCodeSettingDict.get("nozzle_diameter")*(float(gCodeSettingDict.get("perimeter_extrusion_width").strip("%"))/100)
+    isWarned=False    
+    for key,val in gCodeSettingDict.items():
+        if isinstance(val,tuple) :
+            if gCodeSettingDict.get("Fallback_"+key):
+                gCodeSettingDict[key]=gCodeSettingDict.get("Fallback_"+key)
+                #warnings.warn(f"{key}: Fallback value used: {gCodeSettingDict.get(key)}")
+            else:
+                gCodeSettingDict[key]=val[0]    
+                if not isWarned:
+                    warnings.warn(f"{key} was specified as tuple/list, this is normal for using multiple extruders. For all list values First values will be used. If unhappy: Add manual fallback value by searching for ADD FALLBACK in the code. And add 'Fallback_<key>:<yourValue>' into the dictionary.")
+                    isWarned=True
     return gCodeSettingDict
 
 def checkforNecesarrySettings(gCodeSettingDict:dict)->bool:
