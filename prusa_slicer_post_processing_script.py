@@ -278,7 +278,7 @@ def main(gCodeFileStream,path2GCode,skipInput)->None:
                         #plt.show()
                         for ida,arc in enumerate(arcs4gcode):
                             if not arc.is_empty:    
-                                arcGCode=arc2GCode(arcline=arc,eStepsPerMM=eStepsPerMM,arcidx=ida)
+                                arcGCode=arc2GCode(arcline=arc,eStepsPerMM=eStepsPerMM,arcidx=ida,parameters)
                                 arcOverhangGCode.append(arcGCode)
                                 if parameters.get("TimeLapseEveryNArcs")>0:
                                     if ida%parameters.get("TimeLapseEveryNArcs"):
@@ -1153,7 +1153,7 @@ def arc2GCode(arcline:LineString,eStepsPerMM:float,arcidx=None,kwargs={})->list:
             p1=p
             GCodeLines.append(f";Arc {arcidx if arcidx else ' '} Length:{arcline.length}\n")
             GCodeLines.append(p2GCode(p,F=kwargs.get('ArcTravelFeedRate',100*60)))#feedrate is mm/min...
-            GCodeLines.append(retractGCode(retract=False))
+            GCodeLines.append(retractGCode(retract=False,kwargs))
             GCodeLines.append(setFeedRateGCode(arcPrintSpeed))
         else:
             dist=p.distance(p1)
@@ -1162,7 +1162,7 @@ def arc2GCode(arcline:LineString,eStepsPerMM:float,arcidx=None,kwargs={})->list:
                 p1=p
         if idp==len(pts)-1:
             GCodeLines.append(p2GCode(pExtend,E=extDist*eStepsPerMM))#extend arc tangentially for better bonding between arcs
-            GCodeLines.append(retractGCode(retract=True))
+            GCodeLines.append(retractGCode(retract=True,kwargs))
     return GCodeLines        
 
 def hilbert2GCode(allhilbertpts:list,parameters:dict,layerheight:float):
