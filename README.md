@@ -49,9 +49,11 @@ and the path of the gcode file. Will overwrite the file.
 4. Open the finished gcode file to see the results.
 
 Notes to nail it first try:
-If the python path contains any empty spaces, mask them as described here (using "\ " on unix like sistems and "! " on windows): 
+If any path contains empty spaces, mask them as described here (using "\ " on unix like sistems and "! " on windows): 
 https://manual.slic3r.org/advanced/post-processing
 https://help.prusa3d.com/article/post-processing-scripts_283913
+
+currently only using quotation marks " at the beginning and end of the path with empty spaces seem to work.
 
 
 If you want to change generation settings: Open the Script in an editor, scroll to 'Parameter' section. Settings from PrusaSlicer will be extracted automaticly from the gcode.
