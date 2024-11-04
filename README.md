@@ -189,3 +189,65 @@ Finally the gcode file will be rewritten. All infos are copied and the Arcs are 
 - Example 1: Refactored the main script for better readability
 - Example 2: Updated the requirements.txt file with new dependencies
 - Example 3: Improved error handling in the main script
+
+## 13. Configuration File Support
+
+### New Configuration File Format
+
+The script now supports a configuration file to specify settings. This allows users to modify settings without directly editing the script.
+
+### Example Configuration File
+
+```ini
+[Settings]
+CheckForAllowedSpace = False
+ArcCenterOffset = 2
+ArcMinPrintSpeed = 30
+ArcPrintSpeed = 90
+ArcTravelFeedRate = 1800
+ExtendIntoPerimeter = 1.5
+MaxDistanceFromPerimeter = 2
+MinArea = 50
+MinBridgeLength = 5
+Path2Output = 
+RMax = 110
+TimeLapseEveryNArcs = 0
+aboveArcsFanSpeed = 25
+aboveArcsInfillPrintSpeed = 600
+aboveArcsPerimeterFanSpeed = 25
+aboveArcsPerimeterPrintSpeed = 180
+applyAboveFanSpeedToWholeLayer = True
+CoolingSettingDetectionDistance = 5
+specialCoolingZdist = 3
+ArcExtrusionMultiplier = 1.35
+ArcSlowDownBelowThisDuration = 3
+ArcWidth = 0.38
+ArcFanSpeed = 255
+CornerImportanceMultiplier = 0.2
+DistanceBetweenPointsOnStartLine = 0.1
+GCodeArcPtMinDist = 0.1
+ExtendArcDist = 1.0
+HilbertFillingPercentage = 100
+HilbertInfillExtrusionMultiplier = 1.05
+HilbertTravelEveryNSeconds = 6
+MinStartArcs = 2
+PointsPerCircle = 80
+SafetyBreak_MaxArcNumber = 2000
+WarnBelowThisFillingPercentage = 90
+UseLeastAmountOfCenterPoints = True
+plotStart = False
+plotArcsEachStep = False
+plotArcsFinal = False
+plotDetectedInfillPoly = False
+plotEachHilbert = False
+PrintDebugVerification = False
+```
+
+### How to Use the Configuration File
+
+1. Create a configuration file (e.g., `config.ini`) with the desired settings.
+2. Pass the path to the configuration file as an argument when running the script.
+
+```sh
+python prusa_slicer_post_processing_script.py config.ini <path_to_gcode_file>
+```
