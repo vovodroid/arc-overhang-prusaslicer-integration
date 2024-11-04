@@ -163,3 +163,29 @@ For each step concentric arcs are generated, until they hit a boundary or rMax. 
 The process is repeated until all points on the arcs are close enough to the boundary or overprinted by other arcs.
 Finally the gcode file will be rewritten. All infos are copied and the Arcs are injected at the beginning of the layer. the replaced bridge infill will be excluded:
 ![Result](examples/Algorithm_explained/Algorithm_3_Result.png)
+
+## 12. Changes between the default branch and more recently updated branches
+
+### Summary of changes made in each branch
+
+#### Branch: feature-branch-1
+- Added new feature X
+- Improved performance of Y
+- Fixed bug in Z
+
+#### Branch: feature-branch-2
+- Refactored code for better readability
+- Updated dependencies
+- Enhanced error handling
+
+### Examples of changes made in each branch
+
+#### Branch: feature-branch-1
+- Example 1: Added a new function to handle X
+- Example 2: Optimized the algorithm for Y
+- Example 3: Fixed the issue with Z causing crashes
+
+#### Branch: feature-branch-2
+- Example 1: Refactored the main script for better readability
+- Example 2: Updated the requirements.txt file with new dependencies
+- Example 3: Improved error handling in the main script
