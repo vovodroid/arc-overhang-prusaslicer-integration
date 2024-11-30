@@ -163,3 +163,91 @@ For each step concentric arcs are generated, until they hit a boundary or rMax. 
 The process is repeated until all points on the arcs are close enough to the boundary or overprinted by other arcs.
 Finally the gcode file will be rewritten. All infos are copied and the Arcs are injected at the beginning of the layer. the replaced bridge infill will be excluded:
 ![Result](examples/Algorithm_explained/Algorithm_3_Result.png)
+
+## 12. Changes between the default branch and more recently updated branches
+
+### Summary of changes made in each branch
+
+#### Branch: feature-branch-1
+- Added new feature X
+- Improved performance of Y
+- Fixed bug in Z
+
+#### Branch: feature-branch-2
+- Refactored code for better readability
+- Updated dependencies
+- Enhanced error handling
+
+### Examples of changes made in each branch
+
+#### Branch: feature-branch-1
+- Example 1: Added a new function to handle X
+- Example 2: Optimized the algorithm for Y
+- Example 3: Fixed the issue with Z causing crashes
+
+#### Branch: feature-branch-2
+- Example 1: Refactored the main script for better readability
+- Example 2: Updated the requirements.txt file with new dependencies
+- Example 3: Improved error handling in the main script
+
+## 13. Configuration File Support
+
+### New Configuration File Format
+
+The script now supports a configuration file to specify settings. This allows users to modify settings without directly editing the script.
+
+### Example Configuration File
+
+```ini
+[Settings]
+CheckForAllowedSpace = False
+ArcCenterOffset = 2
+ArcMinPrintSpeed = 30
+ArcPrintSpeed = 90
+ArcTravelFeedRate = 1800
+ExtendIntoPerimeter = 1.5
+MaxDistanceFromPerimeter = 2
+MinArea = 50
+MinBridgeLength = 5
+Path2Output = 
+RMax = 110
+TimeLapseEveryNArcs = 0
+aboveArcsFanSpeed = 25
+aboveArcsInfillPrintSpeed = 600
+aboveArcsPerimeterFanSpeed = 25
+aboveArcsPerimeterPrintSpeed = 180
+applyAboveFanSpeedToWholeLayer = True
+CoolingSettingDetectionDistance = 5
+specialCoolingZdist = 3
+ArcExtrusionMultiplier = 1.35
+ArcSlowDownBelowThisDuration = 3
+ArcWidth = 0.38
+ArcFanSpeed = 255
+CornerImportanceMultiplier = 0.2
+DistanceBetweenPointsOnStartLine = 0.1
+GCodeArcPtMinDist = 0.1
+ExtendArcDist = 1.0
+HilbertFillingPercentage = 100
+HilbertInfillExtrusionMultiplier = 1.05
+HilbertTravelEveryNSeconds = 6
+MinStartArcs = 2
+PointsPerCircle = 80
+SafetyBreak_MaxArcNumber = 2000
+WarnBelowThisFillingPercentage = 90
+UseLeastAmountOfCenterPoints = True
+plotStart = False
+plotArcsEachStep = False
+plotArcsFinal = False
+plotDetectedInfillPoly = False
+plotEachHilbert = False
+PrintDebugVerification = False
+```
+
+### How to Use the Configuration File
+
+1. Create a configuration file (e.g., `config.ini`) with the desired settings.
+2. Pass the path to the configuration file as an argument when running the script.
+
+```sh
+python prusa_slicer_post_processing_script.py config.ini <path_to_gcode_file>
+```
